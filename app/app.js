@@ -5,11 +5,13 @@
 
     var ctrl = this;
 
-    this.board = [
+    var blankBoard = [
       null, null, null,
       null, null, null,
       null, null, null
     ];
+
+    this.board = blankBoard.slice(0);
 
     this.lines = [
       // rows:
@@ -28,7 +30,7 @@
     ];
 
     this.step = 1;
-    this.isOver = false;
+    this.winner = null;
     this.computerSelected = [];
 
     this.corners = [0, 2, 6, 8];
@@ -36,6 +38,14 @@
     var init = function() {
       ctrl.computerMove();
     };
+
+    this.restart = function() {
+      this.board = blankBoard.slice(0);
+      this.winner = null;
+      this.computerSelected = [];
+      this.step = 1;
+      ctrl.computerMove();
+    }
 
     this.fillLine = function(expectedValue, inputValue) {
       var countInLine,
@@ -92,8 +102,8 @@
 
         var oppositeCornerVal = ctrl._readCell(oppositeCorner);
 
-        // if opposite corner is free and middle is not human's - go get that corner
-        if (ctrl._readCell(4) !== 1 && oppositeCornerVal === null) {
+        // if opposite corner is free - go get that corner
+        if (oppositeCornerVal === null) {
 
           ctrl._computerSetCell(oppositeCorner);
 
@@ -158,7 +168,7 @@
     this.humanSelectCell = function(idx, value) {
       var curVal = ctrl._readCell(idx);
 
-      if (ctrl.isOver) return false;
+      if (ctrl.winner) return false;
 
       if (curVal === null) {
 
@@ -171,10 +181,28 @@
       }
     };
 
-    // refactor
     this.checkOver = function() {
+      var counts, possibleWinner, cellValue;
+      _.each(this.lines, function(line){
 
+        if (ctrl.winner) return;
 
+        counts = [0, 0]; // [computer, human]
+
+        _.each(line, function(idx){
+
+          cellValue = ctrl._readCell(idx);
+
+          counts[cellValue] = counts[cellValue] + 1;
+
+        });
+
+        possibleWinner = counts.indexOf(3);
+
+        if (possibleWinner !== -1) {
+          ctrl.winner = possibleWinner === 0 ? 'Computer' : 'You';
+        };
+      });
     };
 
     this._readCell = function(idx) {
@@ -200,7 +228,7 @@
 
     this._freeCorners = function() {
       return ctrl._freeCells().filter(function(n) {
-          return ctrl.corners.indexOf(n) != -1;
+        return ctrl.corners.indexOf(n) != -1;
       });
     };
 

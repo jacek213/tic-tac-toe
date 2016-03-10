@@ -29,6 +29,12 @@
 
     <div layout="col">
 
+      <div ng-show="game.winner">
+        {{game.winner}} won!
+
+        <button ng-click="game.restart()">start over</button>
+      </div>
+
     </div>
 
     </div>
