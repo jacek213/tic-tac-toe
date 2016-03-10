@@ -1,4 +1,4 @@
-table td {
+.cell {
     width: 100px;
     height: 100px;
     text-align: center;
@@ -6,13 +6,13 @@ table td {
     border: solid 1px #ddd;
 }
 
-table td.x {
+.cell-x {
   background: url("tic-x.png");
   background-size: contain;
 
 }
 
-table td.y {
+.cell-o {
   background: url("tic-o.png");
   background-size: contain;
 }

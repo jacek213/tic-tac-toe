@@ -5,24 +5,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Game of life</title>
     <link rel="stylesheet" type="text/css" href="app.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/angular-material/angular-material.min.css">
+
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-material/angular-material.min.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
     <script src="app.js"></script>
   </head>
 
   <body ng-controller="GameController as game">
 
+    <div layout="col" >
+      <div layout="row" flex="20" layout-wrap ng-repeat="cells in game.board | groupBy:3">
+        <div flex="33" class="cell" ng-repeat="cell in cells track by $index" ng-class="cell === 0 ? 'cell-o' : (cell === 1 ? 'cell-x' : '')" ng-click="game.humanSelectCell($index, 1)">
+
+        </div>
+    </div>
+
+
+    <div layout="col">
+
+    </div>
+
+    </div>
+<!--
     <table>
       <thead>
         <th>
         </th>
       </thead>
       <tbody>
-        <tr ng-repeat="row in game.board track by $index">
+        <tr ng-repeat="row in game.board | groupBy:4">
           <td ng-repeat="item in row track by $index" ng-class="item === 1 ? 'x' : (item === 0 ? 'y' : '')" ng-class="{'y': item === 'y'}" ng-click="game.selectCell($parent.$index, $index, 1)">
           </td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
+
+
+<!--     <div id="controls">
+      <button ng-click="game.restart()" ng-show="game.isOver">start again</button>
+    </div> -->
   </body>
 </html>

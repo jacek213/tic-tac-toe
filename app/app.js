@@ -1,64 +1,60 @@
 (function() {
-  var app = angular.module('gameOfLife', []);
+  var app = angular.module('gameOfLife', ['ngMaterial', 'angular.filter']);
 
   app.controller("GameController", function(){
 
     var ctrl = this;
 
     this.board = [
-      [null, null, null],
-      [null, null, null],
-      [null, null, null]
+      null, null, null,
+      null, null, null,
+      null, null, null
     ];
 
-    this.lineCoords = [
+    this.lines = [
       // rows:
-      [[0,0], [0,1], [0,2]],
-      [[1,0], [1,1], [1,2]],
-      [[2,0], [2,1], [2,2]],
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
 
       // cols:
-      [[0,0], [1,0], [2,0]],
-      [[0,1], [1,1], [2,1]],
-      [[0,2], [1,2], [2,2]],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
 
       // diags:
-      [[0,0], [1,1], [2,2]],
-      [[2,0], [1,1], [0,2]]
+      [0, 4, 8],
+      [2, 4, 6]
     ];
 
     this.step = 1;
+    this.isOver = false;
+    this.computerSelected = [];
 
-    this.userSelectedCoords = [];
-    this.computerSelectedCoords = [];
-
-    this.cornersCoords = [[0,0], [0,2], [2,0], [2,2]];
+    this.corners = [0, 2, 6, 8];
 
     var init = function() {
-      var randomCornerCoords = ctrl.cornersCoords[Math.floor(Math.random()*ctrl.cornersCoords.length)];
-      ctrl.selectCell(randomCornerCoords[0], randomCornerCoords[1], 0);
+      ctrl.computerMove();
     };
 
-    this.attemptToFillLine = function(expectedValue, inputValue) {
-
+    this.fillLine = function(expectedValue, inputValue) {
       var countInLine,
           cellValue,
-          missingCellCoords,
+          missingCells,
           line,
-          coords,
           inputSet = false;
 
-      _.each(ctrl.lineCoords, function(line){
+      _.each(ctrl.lines, function(line){
 
         if (inputSet) return; // break dla ubogich
 
         countInLine = 0;
-        missingCellCoords = null;
+        missingCells = null;
         cellValue = null;
 
-        _.each(line, function(coords){
+        _.each(line, function(idx){
 
-          cellValue = ctrl._readCell(coords[0], coords[1]);
+          cellValue = ctrl._readCell(idx);
 
           // cell matches expected result
           if (cellValue === expectedValue) {
@@ -66,169 +62,146 @@
 
           // there is a blank space in line
           } else if (cellValue === null) {
-            missingCellCoords = coords;
+            missingCells = idx;
           }
-
         });
 
-        if (countInLine === 2 && missingCellCoords) {
-
-          ctrl._setCell(missingCellCoords[0], missingCellCoords[1], inputValue);
-
+        if (countInLine === 2 && missingCells) {
+          ctrl._setCell(missingCells, inputValue);
           inputSet = true;
-
         }
-
       });
-
       return inputSet;
-
     };
 
 
+    this._computerSetCell = function(idx) {
+      ctrl._setCell(idx, 0);
+      ctrl.computerSelected.push(idx);
+    }
+
     this.computerMove = function() {
 
-      if (ctrl.step == 2) {
+      if (ctrl.step === 1) {
+        var randomCorner = ctrl.corners[Math.floor(Math.random()*ctrl.corners.length)];
+        ctrl._computerSetCell(randomCorner);
 
-        var oppositeCornerCoords = ctrl.oppositeCornerCoords(ctrl.computerSelectedCoords[0]);
+      } else if (ctrl.step === 2) {
 
-        var oppositeCornerVal = ctrl._readCell(oppositeCornerCoords[0], oppositeCornerCoords[1]);
+        var oppositeCorner = ctrl.oppositeCorner(ctrl.computerSelected[0]);
 
-        if (oppositeCornerVal === null) { // if opposite corner is free - go get it
+        var oppositeCornerVal = ctrl._readCell(oppositeCorner);
 
-          ctrl.selectCell(oppositeCornerCoords[0], oppositeCornerCoords[1], 0);
+        // if opposite corner is free and middle is not human's - go get that corner
+        if (ctrl._readCell(4) !== 1 && oppositeCornerVal === null) {
+
+          ctrl._computerSetCell(oppositeCorner);
 
         } else { // otherwise get some other free corner
 
-          var freeCornerCords = ctrl._freeCornerCoords()[0];
+          var freeCorner = ctrl._freeCorners()[0];
 
-          ctrl.selectCell(freeCornerCords[0], freeCornerCords[1], 0);
+          ctrl._computerSetCell(freeCorner);
 
         }
 
       } else if (ctrl.step >= 3) {
 
-        // find line occupied by computer with 2 placed already in place
-        // if it aint possible, find a line occupied by human with a single space
-        // if the above doesnt happen, try to go in empty corner
-        // if no corners empty go to random free cell
+        // try to fill line occupied by computer with 2 cells already occupied
+        if (!ctrl.fillLine(0,0)) {
 
-        if (!ctrl.attemptToFillLine(0,0)) {
+          // try to block human line with 2 cells already occupied
+          if (!ctrl.fillLine(1,0)){
 
-          if (!ctrl.attemptToFillLine(1,0)){
+            var freeCorners = ctrl._freeCorners();
 
-            var freeCorners = ctrl._freeCornerCoords();
-
+            // try to go in empty corner
             if (freeCorners.length) {
 
               var firstFreeCorner = freeCorners[0];
 
-              ctrl.selectCell(firstFreeCorner[0], firstFreeCorner[1], 0);
+              ctrl._computerSetCell(firstFreeCorner);
 
+            // go to random free cell
             } else {
-
-              var randFreeCell = ctrl._freeCellsCoords()[0];
-
-              ctrl.selectCell(randFreeCell[0], randFreeCell[1], 0);
+              var randFreeCell = ctrl._freeCells()[0];
+              ctrl._computerSetCell(randFreeCell);
 
             }
-
           };
         };
 
       } else {
         console.error('Something wrong! Unexpected step.')
       }
-
     };
 
-    this.oppositeCornerCoords = function(coords) {
+    this.oppositeCorner = function(idx) {
 
-      switch (coords.join(' ')) {
-        case '0 0':
-          return [2,2];
+      switch (idx) {
+        case 0:
+          return 8;
           break;
-        case '2 2':
-          return [0,0];
+        case 2:
+          return 6;
           break;
-        case '0 2':
-          return [2,0];
+        case 6:
+          return 2;
           break;
-        case '2 0':
-          return [0,2];
+        case 8:
+          return 0;
           break;
       }
     };
 
-    this.selectCell = function(rowIdx, colIdx, value) {
-      var curVal = ctrl._readCell(rowIdx, colIdx);
+    // caution: used by human only
+    this.humanSelectCell = function(idx, value) {
+      var curVal = ctrl._readCell(idx);
+
+      if (ctrl.isOver) return false;
+
       if (curVal === null) {
-        ctrl._setCell(rowIdx, colIdx, value);
 
-        // next computer step!
-        if (value == 1) {
-
-          ctrl.step += 1;
-
-          ctrl.userSelectedCoords.push([rowIdx, colIdx]);
-
-          ctrl.computerMove();
-        } else {
-
-          ctrl.computerSelectedCoords.push([rowIdx, colIdx]);
-
-        }
+        ctrl._setCell(idx, 1);
+        ctrl.step += 1;
+        ctrl.computerMove();
 
       } else {
         return false;
       }
     };
 
-    this._readCell = function(rowIdx, colIdx) {
-      return ctrl.board[rowIdx][colIdx];
+    // refactor
+    this.checkOver = function() {
+
+
     };
 
-    this._setCell = function(rowIdx, colIdx, value) {
-      ctrl.board[rowIdx][colIdx] = value;
+    this._readCell = function(idx) {
+      return ctrl.board[idx];
     };
 
-    this._freeCellsCoords = function() {
+    this._setCell = function(idx, value) {
+      ctrl.board[idx] = value;
+      ctrl.checkOver();
+    };
 
-      var freeCoords = [];
+    this._freeCells = function() {
+      var freeCells = [];
 
-      _.each(ctrl.lineCoords, function(line){
-
-        _.each(line, function(coords){
-
-          cellValue = ctrl._readCell(coords[0], coords[1]);
-
-          if (cellValue === null) {
-            freeCoords.push(coords);
-          }
-
-        });
-
+      _.each(ctrl.board, function(value, idx){
+         if (value === null) {
+          freeCells.push(idx);
+         };
       });
 
-      return freeCoords;
+      return freeCells;
     };
 
-    this._freeCornerCoords = function() {
-
-      var results = [];
-      var singleCoords;
-
-      for ( i = 0; i < 3; i++ ) {
-
-        singleCoords = ctrl.cornersCoords[i];
-
-        if ( ctrl._readCell(singleCoords[0], singleCoords[1]) === null ) {
-          results.push(singleCoords);
-        }
-
-      }
-      return results;
-
+    this._freeCorners = function() {
+      return ctrl._freeCells().filter(function(n) {
+          return ctrl.corners.indexOf(n) != -1;
+      });
     };
 
     init();
