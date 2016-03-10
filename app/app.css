@@ -1,19 +1,19 @@
 table td {
-    width: 96px;
-    height: 96px;
+    width: 100px;
+    height: 100px;
     text-align: center;
     vertical-align: middle;
     border: solid 1px #ddd;
 }
 
 table td.x {
-  background: url("x.png");
+  background: url("tic-x.png");
   background-size: contain;
 
 }
 
 table td.y {
-  background: url("y.png");
+  background: url("tic-o.png");
   background-size: contain;
 }
 
