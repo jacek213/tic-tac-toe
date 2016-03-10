@@ -1,6 +1,10 @@
-
+#board-container {
+    overflow: hidden;
+    width: 300px;
+}
 
 .cell {
+    float: left;
     width: 100px;
     height: 100px;
     text-align: center;
@@ -8,6 +12,7 @@
     border: solid 1px #ddd;
     cursor: pointer;
 }
+
 
 .cell-x {
   background: url("tic-x.png");

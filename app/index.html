@@ -5,65 +5,55 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Game of life</title>
     <link rel="stylesheet" type="text/css" href="app.css">
-    <link rel="stylesheet" type="text/css" href="bower_components/angular-material/angular-material.min.css">
+
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css"  media="screen,projection"/>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 
     <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-material/angular-material.min.js"></script>
-    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
-    <script src="bower_components/angular-messages/angular-messages.min.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
-    <script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="bower_components/materialize/dist/js/materialize.min.js"></script>
+
+
     <script src="app.js"></script>
   </head>
 
   <body ng-controller="GameController as game">
-    <div id="box">
 
-    </div>
+    <div class="row">
 
-    <div layout="col" >
-      <div layout="row" flex="20" layout-wrap ng-repeat="cells in game.board | groupBy:3">
-        <div flex="33" class="cell" ng-repeat="cell in cells track by $index" ng-class="cell === 0 ? 'cell-o' : (cell === 1 ? 'cell-x' : '')" ng-click="game.humanSelectCell($index, 1)">
-
+      <div class="col s3">
+        <div id="board-container">
+          <div class="cell" ng-repeat="cell in game.board track by $index" ng-class="cell === 0 ? 'cell-o' : (cell === 1 ? 'cell-x' : '')" ng-click="game.humanSelectCell($index, 1)">
+          </div>
         </div>
-    </div>
+      </div>
 
 
-    <div layout="col">
+      <div class="col s9">
+        <div ng-show="game.isOver">
+          <span ng-show="game.winner">
+            {{game.winner}} won!
+          </span>
 
-      <div ng-show="game.isOver">
-        <span ng-show="game.winner">
-          {{game.winner}} won!
-        </span>
+          <span ng-show="game.draw">
+            Draw!
+          </span>
 
-        <span ng-show="game.draw">
-          Draw!
-        </span>
+          <button class="md-button md-primary md-raised md-ink-ripple" ng-click="game.restart()">start over</button>
+        </div>
 
-        <button class="md-button md-primary md-raised md-ink-ripple" ng-click="game.restart()">start over</button>
       </div>
 
     </div>
 
-    </div>
-<!--
-    <table>
-      <thead>
-        <th>
-        </th>
-      </thead>
-      <tbody>
-        <tr ng-repeat="row in game.board | groupBy:4">
-          <td ng-repeat="item in row track by $index" ng-class="item === 1 ? 'x' : (item === 0 ? 'y' : '')" ng-class="{'y': item === 'y'}" ng-click="game.selectCell($parent.$index, $index, 1)">
-          </td>
-        </tr>
-      </tbody>
-    </table> -->
 
-
-<!--     <div id="controls">
-      <button ng-click="game.restart()" ng-show="game.isOver">start again</button>
-    </div> -->
   </body>
 </html>

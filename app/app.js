@@ -1,5 +1,5 @@
 (function() {
-  var app = angular.module('gameOfLife', ['ngMaterial', 'angular.filter']);
+  var app = angular.module('gameOfLife', []);
 
   app.controller("GameController", function(){
 
