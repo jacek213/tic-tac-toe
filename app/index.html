@@ -18,6 +18,9 @@
   </head>
 
   <body ng-controller="GameController as game">
+    <div id="box">
+
+    </div>
 
     <div layout="col" >
       <div layout="row" flex="20" layout-wrap ng-repeat="cells in game.board | groupBy:3">
@@ -29,10 +32,16 @@
 
     <div layout="col">
 
-      <div ng-show="game.winner">
-        {{game.winner}} won!
+      <div ng-show="game.isOver">
+        <span ng-show="game.winner">
+          {{game.winner}} won!
+        </span>
 
-        <button ng-click="game.restart()">start over</button>
+        <span ng-show="game.draw">
+          Draw!
+        </span>
+
+        <button class="md-button md-primary md-raised md-ink-ripple" ng-click="game.restart()">start over</button>
       </div>
 
     </div>

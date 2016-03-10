@@ -30,6 +30,7 @@
     ];
 
     this.step = 1;
+    this.draw = false;
     this.winner = null;
     this.computerSelected = [];
 
@@ -42,6 +43,8 @@
     this.restart = function() {
       this.board = blankBoard.slice(0);
       this.winner = null;
+      this.draw = false;
+      this.isOver = false;
       this.computerSelected = [];
       this.step = 1;
       ctrl.computerMove();
@@ -168,7 +171,7 @@
     this.humanSelectCell = function(idx, value) {
       var curVal = ctrl._readCell(idx);
 
-      if (ctrl.winner) return false;
+      if (ctrl.isOver) return false;
 
       if (curVal === null) {
 
@@ -183,9 +186,10 @@
 
     this.checkOver = function() {
       var counts, possibleWinner, cellValue;
+
       _.each(this.lines, function(line){
 
-        if (ctrl.winner) return;
+        if (ctrl.isOver) return;
 
         counts = [0, 0]; // [computer, human]
 
@@ -200,8 +204,13 @@
         possibleWinner = counts.indexOf(3);
 
         if (possibleWinner !== -1) {
+          ctrl.isOver = true;
           ctrl.winner = possibleWinner === 0 ? 'Computer' : 'You';
-        };
+        } else if (ctrl.board.indexOf(null) === -1) {
+          ctrl.isOver = true;
+          ctrl.draw = true;
+        }
+
       });
     };
 
