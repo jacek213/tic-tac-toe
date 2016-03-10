@@ -1,0 +1,12 @@
+{
+  "name": "angular-game-of-life",
+  "description": "Game of Life in angularJS",
+  "version": "0.0.1",
+  "homepage": "https://github.com/jacek213/angular-game-of-life",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.1",
+    "underscore": "^1.8.3"
+  }
+}
