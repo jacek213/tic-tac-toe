@@ -23,37 +23,47 @@
 
 
     <script src="app.js"></script>
+    <script src="others.js"></script>
   </head>
 
   <body ng-controller="GameController as game">
 
-    <div class="row">
+    <nav class="cyan darken-1" style="margin-bottom:40px;">
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo nav-title">Tic-Tac-Toe!</a>
 
-      <div class="col s3">
+      </div>
+    </nav>
+
+    <div class="card darken-1" style="margin:0 auto;width:40%;min-width:360px;">
+      <div class="card-content ">
+        <span class="card-title"></span>
+
+
         <div id="board-container">
-          <div class="cell" ng-repeat="cell in game.board track by $index" ng-class="cell === 0 ? 'cell-o' : (cell === 1 ? 'cell-x' : '')" ng-click="game.humanSelectCell($index, 1)">
+          <div class="cell" ng-repeat="cell in game.board track by $index" ng-class="{'cell-o': cell === 0, 'cell-x': cell === 1}" ng-click="game.humanSelectCell($index, 1)" data-idx="{{$index}}">
+          </div>
+        </div>
+
+
+      </div>
+      <div class="card-action" style="margin-top:30px;">
+        <div class="row">
+
+          <div class="col s4 valign center stats">
+            <span class="cyan-text darken-5">Computer<div class="score-item blue-grey-text">{{game.wins[0]}}</div></span>
+          </div>
+          <div class="col s4 valign center stats">
+            <span class="cyan-text darken-5">User<div class="score-item blue-grey-text">{{game.wins[1]}}</div></span>
+          </div>
+          <div class="col s4 valign center stats">
+            <span class="cyan-text darken-5">Draws<div class="score-item blue-grey-text">{{game.wins[2]}}</div></span>
           </div>
         </div>
       </div>
-
-
-      <div class="col s9">
-        <div ng-show="game.isOver">
-          <span ng-show="game.winner">
-            {{game.winner}} won!
-          </span>
-
-          <span ng-show="game.draw">
-            Draw!
-          </span>
-
-          <button class="md-button md-primary md-raised md-ink-ripple" ng-click="game.restart()">start over</button>
-        </div>
-
-      </div>
-
     </div>
 
+    <div id="restart" ng-click="game.restart()"></div>
 
   </body>
 </html>

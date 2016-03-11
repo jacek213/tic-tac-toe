@@ -29,6 +29,9 @@
       [2, 4, 6]
     ];
 
+    // computer / user / draws
+    this.wins = [0,0,0];
+
     this.step = 1;
     this.draw = false;
     this.winner = null;
@@ -206,12 +209,27 @@
         if (possibleWinner !== -1) {
           ctrl.isOver = true;
           ctrl.winner = possibleWinner === 0 ? 'Computer' : 'You';
+
+          ctrl.wins[possibleWinner] += 1;
+
+          ctrl._fireToast(ctrl.winner + ' won!');
+
         } else if (ctrl.board.indexOf(null) === -1) {
           ctrl.isOver = true;
           ctrl.draw = true;
+
+          ctrl.wins[2] += 1;
+
+          ctrl._fireToast('We got a draw!');
+
         }
 
       });
+    };
+
+    this._fireToast = function(text) {
+      var toastContent = $('<span>'+text+'<a id="toast-restart" style="margin-left:14px;" class="btn-floating waves-effect waves-light red"><i class="material-icons">replay</i></a>');
+      Materialize.toast(toastContent, 1000000000);
     };
 
     this._readCell = function(idx) {
