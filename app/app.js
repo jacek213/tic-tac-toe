@@ -39,19 +39,36 @@
 
     this.corners = [0, 2, 6, 8];
 
+    this.gamesCount = 0;
+
     var init = function() {
       ctrl.computerMove();
+      ctrl._startToast('Computer starts!');
     };
 
     this.restart = function() {
+      this.gamesCount += 1;
+
       this.board = blankBoard.slice(0);
       this.winner = null;
       this.draw = false;
       this.isOver = false;
       this.computerSelected = [];
       this.step = 1;
-      ctrl.computerMove();
+
+      if ((this.gamesCount % 2) === 0) {
+        ctrl.computerMove();
+        ctrl._startToast('Computer starts!');
+      } else {
+        ctrl._startToast('You start!');
+      }
     }
+
+    this._startToast = function(msg) {
+      setTimeout(function(){
+        Materialize.toast(msg, 2000);
+      }, 200);
+    };
 
     this.fillLine = function(expectedValue, inputValue) {
       var countInLine,
